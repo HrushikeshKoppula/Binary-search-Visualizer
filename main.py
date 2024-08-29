@@ -16,86 +16,59 @@ font = pygame.font.Font("FiraCode-Regular.ttf", 24)
 
 class Visualizer:
     def __init__(self):
-        self.n = int(input("n= "))
-        self.numbers = []
-        print("Enter n numbers:")
-        for i in range(self.n):
-            num = int(input())
-            self.numbers.append(num)
-        self.target = int(input("target= "))
-        self.numbers.sort()
+        # self.n = int(input("n= "))
+        # self.numbers = []
+        # print("Enter n numbers:")
+        # for i in range(self.n):
+        #     num = int(input())
+        #     self.numbers.append(num)
+        # self.target = int(input("target= "))
+        # self.numbers.sort()
+        self.n = 6
+        self.numbers = [1,2,3,4,5,6]
+        self.target = 6
         self.low = 0
         self.high = self.n-1
         self.mid = 0
-    
+        self.finished = False
+
     def Draw(self):
         box_width = 50
         box_height = 25
         margin = 10
         x_start = (screen_width-(box_width+margin)*self.n)//2
         y_start = screen_height//2-box_height//2
-        for i, number in self.n:
+        for i in range(self.n):
             x = x_start+i*(box_width + margin)
             y = y_start
-            if i == self.low or i == self.high:
+            if i == self.mid:
+                if self.finished:
+                    color = target_color
+                else:
+                    color = mid_color
+            elif i == self.low or i == self.high:
                 color = low_high_color
-            elif i == self.mid:
-                color = mid_color
             else:
                 color = box_color
             pygame.draw.rect(screen, color, (x, y, box_width, box_height))
-            text_surface = font.render(str(number), True, text_color)
+            text_surface = font.render(str(self.numbers[i]), True, text_color)
             text_rect = text_surface.get_rect(center=(x+box_width//2,y+box_height//2))
             screen.blit(text_surface, text_rect)
-    
+
     def OneStepBinarySearch(self):
-        self.mid = low+(high-low)//2
-        if self.numbers[self.mid] == self.target:
-            target_index = self.mid
-        elif self.numbers[self.mid] < self.target:
-            low = self.mid+1
-        else:
-            high = self.mid-1
+        if not self.finished:
+            self.mid = self.low+(self.high-self.low)//2
+            if self.numbers[self.mid] == self.target:
+                self.finished=True
+            elif self.numbers[self.mid] < self.target:
+                self.low = self.mid+1
+            else:
+                self.high = self.mid-1
 
-# def draw_boxes(numbers, low, high, mid, target_index=None):
-#     box_width = 50
-#     box_height = 25
-#     margin = 10
-#     x_start = (screen_width-(box_width+margin)*n)//2
-#     y_start = screen_height//2-box_height//2
-#     for i, number in enumerate(numbers):
-#         x = x_start+i*(box_width + margin)
-#         y = y_start
-#         if i == target_index:
-#             color = target_color
-#         elif i == low or i == high:
-#             color = low_high_color
-#         elif i == mid:
-#             color = mid_color
-#         else:
-#             color = box_color
-#         pygame.draw.rect(screen, color, (x, y, box_width, box_height))
-#         text_surface = font.render(str(number), True, text_color)
-#         text_rect = text_surface.get_rect(center=(x+box_width//2,y+box_height//2))
-#         screen.blit(text_surface, text_rect)
+    def Stop(self):
+        return self.finished or self.low>self.high
 
-# def binary_search(numbers, target):
-#     low = 0
-#     high = len(numbers)-1
-#     while low <= high:
-#         mid = (low + high) // 2
-#         draw_boxes(numbers, low, high, mid, target_index)
-#         pygame.display.flip()
-#         if numbers[mid] == target:
-#             target_index = mid
-#             break
-#         elif numbers[mid] < target:
-#             low = mid + 1
-#         else:
-#             high = mid - 1
-#     draw_boxes(numbers, low, high, mid, target_index)
-#     pygame.display.flip()
-#     return target_index
+BSV = Visualizer()
 
 while running:
     for event in pygame.event.get():
@@ -103,9 +76,11 @@ while running:
             running = False
 
     screen.fill(background_color)
-
+    if not BSV.Stop():
+        BSV.OneStepBinarySearch()
+    BSV.Draw()
     pygame.display.flip()
 
-    clock.tick(60)
+    clock.tick(1)
 
 pygame.quit()
