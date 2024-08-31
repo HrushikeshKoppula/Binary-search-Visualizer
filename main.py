@@ -1,7 +1,7 @@
 import pygame
 
 pygame.init()
-screen_size = (screen_width,screen_height) = (1280,720)
+screen_size = (screen_width,screen_height) = (1280,200)
 screen = pygame.display.set_mode(screen_size)
 clock = pygame.time.Clock()
 running = True
@@ -96,7 +96,7 @@ class Visualizer:
         return self.finished or self.low>self.high
 
 BSV = Visualizer()
-start_button = Button("Start",screen_width//2-50,screen_height//2+100,100,50)
+start_button = Button("Start",screen_width//2-50,screen_height//2,100,50)
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
